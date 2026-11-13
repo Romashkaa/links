@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Romashka's</title>
+<style>
+:root {
+  --bg: #f5f5f7;
+  --fg: #1d1d1f;
+  --muted: #6e6e73;
+  --line: rgba(60, 60, 67, .16);
+  --accent: #0a84ff;
+  --gray: #8e8e93;
+  --blue: #0a84ff;
+  --green: #34c759;
+  --orange: #ff9500;
+  --pink: #ff2d55;
+  --purple: #af52de;
+  --teal: #30b0c7;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --fg: #f5f5f7;
+    --muted: #98989f;
+    --line: rgba(255, 255, 255, .14);
+    --gray: #98989d;
+    --blue: #0a84ff;
+    --green: #30d158;
+    --orange: #ff9f0a;
+    --pink: #ff375f;
+    --purple: #bf5af2;
+    --teal: #40c8e0;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+
+body {
+  position: relative;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+#fx {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 420px;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .85;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 38%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 38%, transparent 100%);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: calc(120px + env(safe-area-inset-top, 0px)) 16px calc(72px + env(safe-area-inset-bottom, 0px));
+  animation: rise .4s cubic-bezier(.2, .8, .2, 1);
+}
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+h1 {
+  margin: 0 0 110px;
+  text-align: center;
+  font-size: clamp(34px, 7vw, 52px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  text-shadow: 0 0 22px var(--bg), 0 0 8px var(--bg);
+}
+
+section { margin: 0 0 36px; }
+
+h2 {
+  --c: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 0 0 12px;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  border-bottom: 1px solid var(--line);
+}
+h2 .ic {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 16%, transparent);
+}
+h2 .ic svg { width: 20px; height: 20px; }
+
+.list {
+  padding: 6px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+  align-items: start;
+}
+.item { min-width: 0; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 16px;
+  transition: color .2s ease;
+}
+a.row:hover { color: var(--accent); }
+a.row:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+.dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gray);
+}
+.nm { min-width: 0; overflow-wrap: anywhere; }
+a.row .nm::after { content: "↗"; margin-left: 6px; font-size: .8em; color: var(--muted); }
+a.row:hover .nm::after { color: var(--accent); }
+
+@media (max-width: 560px) {
+  .list { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrap { animation: none; }
+  .row { transition: none; }
+}
+</style>
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<main class="wrap">
+  <h1>Romashka's</h1>
+  <div id="root"></div>
+</main>
+
+<script type="application/json" id="data">
+[
+  {
+    "name": "Telegram Bots", "icon": "telegram", "color": "blue",
+    "items": [
+      { "name": "Spin Up",  "url": "https://t.me/SpinUpTheBot" },
+      { "name": "Teleglos", "url": "https://t.me/teleglos" }
+    ]
+  },
+  {
+    "name": "Web Projects", "icon": "globe", "color": "green",
+    "items": [
+      { "name": "System Status", "url": "https://romashkaa.github.io/status/#services" },
+      { "name": "Pylits Editor", "url": "https://romashkaa.github.io/Pylits/" }
+    ]
+  },
+  {
+    "name": "Libraries & Frameworks", "icon": "book", "color": "orange",
+    "items": [
+      { "name": "Telekit", "url": "https://github.com/Romashkaa/telekit" },
+      { "name": "Pylits", "url": "https://github.com/Romashkaa/Pylits" },
+      { "name": "LitsDB", "url": "https://pypi.org/project/litsdb/" }
+    ]
+  },
+  {
+    "name": "Profiles & Platforms", "icon": "share", "color": "pink",
+    "items": [
+      { "name": "GitHub", "url": "https://github.com/Romashkaa" },
+      { "name": "PyPI", "url": "https://pypi.org/user/romashka/" }
+    ]
+  }
+]
+</script>
+
+<script>
+function svg(paths) {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + paths + "</svg>";
+}
+
+var ICONS = {
+  telegram: svg('<path d="M21.5 3.5L2.8 10.7c-.8.3-.8 1.4 0 1.7l4.6 1.6 1.8 5.6c.2.6 1 .8 1.4.3l2.6-2.6 4.6 3.4c.6.4 1.4.1 1.5-.6l3-15.3c.2-.8-.6-1.4-1.3-1.1z"/><path d="M7.4 14L18.5 6.5 9.2 19.6"/>'),
+  globe: svg('<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.5 4 5.6 4 9s-1.4 6.5-4 9c-2.6-2.5-4-5.6-4-9s1.4-6.5 4-9z"/>'),
+  book: svg('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h6"/>'),
+  github: svg('<circle cx="6" cy="5.5" r="2.5"/><circle cx="6" cy="18.5" r="2.5"/><circle cx="18" cy="8.5" r="2.5"/><path d="M6 8v8"/><path d="M18 11c0 4-5 3-10.5 6.5"/>'),
+  share: svg('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="5.5" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"/>')
+};
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+  });
+}
+
+function row(s) {
+  var inner = '<span class="dot" aria-hidden="true"></span><span class="nm">' + esc(s.name) + "</span>";
+  if (s.url) {
+    return '<a class="row" href="' + esc(s.url) + '" target="_blank" rel="noopener noreferrer">' + inner + "</a>";
+  }
+  return '<div class="row">' + inner + "</div>";
+}
+
+var data = [];
+try { data = JSON.parse(document.getElementById("data").textContent); }
+catch (e) { document.getElementById("root").textContent = "Invalid JSON: " + e.message; }
+
+document.getElementById("root").innerHTML = data.map(function (c) {
+  var rows = c.items.map(function (s) {
+    return '<li class="item">' + row(s) + "</li>";
+  }).join("");
+  return '<section><h2 style="--c: var(--' + esc(c.color || "blue") + ')"><span class="ic">' +
+    (ICONS[c.icon] || ICONS.globe) + "</span>" + esc(c.name) + '</h2><ul class="list">' + rows + "</ul></section>";
+}).join("");
+</script>
+
+<script>
+
+(function () {
+  var M = Math;
+  var cv = document.getElementById("fx");
+  var ctx = cv.getContext("2d");
+  var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var darkMq = window.matchMedia("(prefers-color-scheme: dark)");
+
+  var FS = 13, CH = 16;
+  var FONT = FS + 'px ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
+  var LV = 24;
+  var RAMP = " .:-=+*#%@";
+  var RAMP2 = ".:-=+*#%@";
+  var DRAMP = ".,-~:;=!*#$@";
+  var GL = "01#%&@$<>/\\|[]{}=+*;:";
+  var TAU = M.PI * 2;
+
+  var P = { GRAY: 0, DONUT: 1, TELE: 2, FLOWER: 3, BALL: 4, FLOOR: 5, SLIME: 6, LIFE: 7, T0: 8, T1: 9, T2: 10, T3: 11 };
+  var PALS = [
+    [[240, 0], [240, 0]],
+    [[345, 88], [38, 96]],
+    [[222, 90], [178, 82]],
+    [[330, 82], [50, 96]],
+    [[268, 80], [198, 88]],
+    [[225, 22], [205, 40]],
+    [[138, 72], [82, 92]],
+    [[196, 70], [152, 86]],
+    [[205, 90], [190, 90]],
+    [[270, 80], [285, 85]],
+    [[320, 85], [345, 90]],
+    [[160, 75], [135, 85]]
+  ];
+
+  var dark = darkMq.matches, LUT = [];
+  function buildLUT() {
+    LUT.length = 0;
+    for (var p = 0; p < PALS.length; p++) {
+      var A = PALS[p][0], B = PALS[p][1];
+      var dh = ((B[0] - A[0] + 540) % 360) - 180;
+      for (var l = 0; l < LV; l++) {
+        var f = l / (LV - 1);
+        var h = (A[0] + dh * f + 360) % 360;
+        var s = A[1] + (B[1] - A[1]) * f;
+        var L = dark ? 40 + 32 * f : 56 - 24 * f;
+        var al = 0.18 + 0.82 * M.pow(f, 0.85);
+        LUT.push("hsla(" + h.toFixed(0) + "," + s.toFixed(0) + "%," + L.toFixed(0) + "%," + al.toFixed(2) + ")");
+      }
+    }
+  }
+  buildLUT();
+  if (darkMq.addEventListener) {
+    darkMq.addEventListener("change", function (e) { dark = e.matches; buildLUT(); });
+  }
+
+  var cw = 8, cols = 0, rows = 0, n = 0, ASP = 2, chr, pal, lv;
+  var mx = 0, my = 0, tmx = 0, tmy = 0;
+
+  function setup() {
+    var dpr = M.min(window.devicePixelRatio || 1, 2);
+    var w = cv.clientWidth, h = cv.clientHeight;
+    cv.width = M.round(w * dpr);
+    cv.height = M.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = FONT;
+    ctx.textBaseline = "middle";
+    cw = ctx.measureText("M").width || 8;
+    cols = M.ceil(w / cw);
+    rows = M.floor(h / CH);
+    n = cols * rows;
+    ASP = CH / cw;
+    chr = new Array(n).fill(" ");
+    pal = new Uint8Array(n);
+    lv = new Uint8Array(n);
+  }
+
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function sm(a, b, x) { x = (x - a) / (b - a); x = x < 0 ? 0 : x > 1 ? 1 : x; return x * x * (3 - 2 * x); }
+  function level(f) { return (clamp01(f) * (LV - 1)) | 0; }
+  function ramp(s, f) { var i = (f * s.length) | 0; return s.charAt(i < 0 ? 0 : i >= s.length ? s.length - 1 : i); }
+  function put(x, y, c, p, f) {
+    if (x < 0 || y < 0 || x >= cols || y >= rows) return;
+    var i = y * cols + x;
+    chr[i] = c; pal[i] = p; lv[i] = level(f);
+  }
+
+  var donut = {
+    name: "donut", pal: 1, dur: 8250,
+    init: function () {
+      this.zb = new Float32Array(n);
+      this.TC = []; this.TS = []; this.PC = []; this.PS = [];
+      for (var a = 0; a < TAU; a += 0.07) { this.TC.push(M.cos(a)); this.TS.push(M.sin(a)); }
+      for (var b = 0; b < TAU; b += 0.03) { this.PC.push(M.cos(b)); this.PS.push(M.sin(b)); }
+    },
+    draw: function (t) {
+      var zb = this.zb; zb.fill(0);
+      var A = t * 1.2 + my * 1.2 + 0.4, B = t * 0.8 + mx * 1.6;
+      var cA = M.cos(A), sA = M.sin(A), cB = M.cos(B), sB = M.sin(B);
+      var cx = cols / 2, cy = rows * 0.47, K2 = 5, K1 = rows * K2 * 3 / 24 * 1.25;
+      var TC = this.TC, TS = this.TS, PC = this.PC, PS = this.PS;
+      for (var i = 0; i < TC.length; i++) {
+        var ct = TC[i], st = TS[i], h = 2 + ct;
+        for (var j = 0; j < PC.length; j++) {
+          var cp = PC[j], sp = PS[j];
+          var x = h * (cB * cp + sA * sB * sp) - st * cA * sB;
+          var y = h * (sB * cp - sA * cB * sp) + st * cA * cB;
+          var z = K2 + cA * h * sp + st * sA;
+          var o = 1 / z;
+          var xp = (cx + K1 * ASP * o * x) | 0, yp = (cy - K1 * o * y) | 0;
+          if (xp < 0 || xp >= cols || yp < 0 || yp >= rows) continue;
+          var L = cp * ct * sB - cA * ct * sp - sA * st + cB * (cA * st - ct * sA * sp);
+          if (L > 0) {
+            var idx = yp * cols + xp;
+            if (o > zb[idx]) {
+              zb[idx] = o;
+              var ci = (L * 8) | 0; if (ci > 11) ci = 11;
+              chr[idx] = DRAMP.charAt(ci); pal[idx] = P.DONUT; lv[idx] = level(L / 1.41);
+            }
+          }
+        }
+      }
+    }
+  };
+
+  var tele = {
+    name: "text", dur: 10500, pal: 2,
+    WORDS: ["TELEKIT", "ROMASHKA", "VING STUDIO", "21", "HOLA"],
+    pick: function () { this.word = this.bag.next(); },
+    init: function () {
+      this.zb = new Float32Array(n);
+      var Wb = M.max(28, M.min(cols - 8, 104));
+      var Hb = M.max(7, M.min((rows * 0.72) | 0, 13));
+      var oc = document.createElement("canvas");
+      oc.width = Wb; oc.height = Hb;
+      var o = oc.getContext("2d");
+      o.fillStyle = "#fff"; o.textAlign = "center"; o.textBaseline = "middle";
+      o.font = '900 40px "Arial Black", "Helvetica Neue", Arial, sans-serif';
+      var m = o.measureText(this.word).width || 200;
+      var s = M.min((Wb - 2) / m, (Hb - 1) * ASP / 30);
+      o.translate(Wb / 2, Hb / 2 + 0.4); o.scale(s, s / ASP);
+      o.fillText(this.word, 0, 0);
+      var d = o.getImageData(0, 0, Wb, Hb).data, mk = new Uint8Array(Wb * Hb), i, x, y, k;
+      for (i = 0; i < mk.length; i++) mk[i] = d[i * 4 + 3] > 110 ? 1 : 0;
+      function at(a, b) { return (a < 0 || b < 0 || a >= Wb || b >= Hb) ? 0 : mk[b * Wb + a]; }
+      var X = [], Y = [], Z = [], NX = [], NY = [], NZ = [], E = [];
+      var DEP = 5, SPAN = 7;
+      for (y = 0; y < Hb; y++) for (x = 0; x < Wb; x++) {
+        if (!mk[y * Wb + x]) continue;
+        var ex = (at(x + 1, y) ? 0 : 1) - (at(x - 1, y) ? 0 : 1);
+        var ey = (at(x, y + 1) ? 0 : 1) - (at(x, y - 1) ? 0 : 1);
+        var edge = (at(x + 1, y) && at(x - 1, y) && at(x, y + 1) && at(x, y - 1)) ? 0 : 1;
+        for (k = 0; k <= DEP; k++) {
+          var side = k > 0 && k < DEP;
+          if (side && !edge) continue;
+          X.push(x - Wb / 2 + 0.5); Y.push((y - Hb / 2 + 0.5) * ASP); Z.push((k / DEP - 0.5) * SPAN);
+          if (k === 0) { NX.push(0); NY.push(0); NZ.push(-1); }
+          else if (k === DEP) { NX.push(0); NY.push(0); NZ.push(1); }
+          else { var ln = M.sqrt(ex * ex + ey * ey) || 1; NX.push(ex / ln); NY.push(ey / ln); NZ.push(0); }
+          E.push(edge ? 1 : 0);
+        }
+      }
+      this.N = X.length;
+      this.X = Float32Array.from(X); this.Y = Float32Array.from(Y); this.Z = Float32Array.from(Z);
+      this.NX = Float32Array.from(NX); this.NY = Float32Array.from(NY); this.NZ = Float32Array.from(NZ);
+      this.E = Uint8Array.from(E);
+    },
+    draw: function (t) {
+      var zb = this.zb; zb.fill(1e9);
+      var th = t * 1.25 + mx * 1.3, ph = 0.26 * M.sin(t * 1.05) + my * 0.5;
+      var cT = M.cos(th), sT = M.sin(th), cP = M.cos(ph), sP = M.sin(ph);
+      var lx = M.cos(t * 1.8) * 0.8, ly = -0.55, lz = -0.65, ll = M.sqrt(lx * lx + ly * ly + lz * lz);
+      lx /= ll; ly /= ll; lz /= ll;
+      var cx = cols / 2, cy = rows * 0.47, dist = 80;
+      var X = this.X, Y = this.Y, Z = this.Z, NX = this.NX, NY = this.NY, NZ = this.NZ, E = this.E;
+      for (var i = 0; i < this.N; i++) {
+        var x1 = X[i] * cT + Z[i] * sT, z1 = -X[i] * sT + Z[i] * cT, y1 = Y[i];
+        var y2 = y1 * cP - z1 * sP, z2 = y1 * sP + z1 * cP;
+        var s = dist / (dist + z2);
+        var xp = M.round(cx + x1 * s), yp = M.round(cy + y2 * s / ASP);
+        if (xp < 0 || xp >= cols || yp < 0 || yp >= rows) continue;
+        var idx = yp * cols + xp;
+        if (z2 >= zb[idx]) continue;
+        var nx = NX[i] * cT + NZ[i] * sT, nz1 = -NX[i] * sT + NZ[i] * cT;
+        var ny = NY[i] * cP - nz1 * sP, nz = NY[i] * sP + nz1 * cP;
+        var dif = nx * lx + ny * ly + nz * lz; if (dif < 0) dif = 0;
+        var f = 0.16 + 0.7 * dif + 0.3 * M.pow(dif, 14);
+        if (E[i]) f += 0.18;
+        zb[idx] = z2;
+        chr[idx] = ramp(RAMP2, f); pal[idx] = P.TELE; lv[idx] = level(f);
+      }
+    }
+  };
+
+  var flower = {
+    name: "flower", pal: 3, dur: 11250,
+    init: function () {
+      var N = 1500;
+      this.N = N; this.zb = new Float32Array(n);
+      this.ang = new Float32Array(N); this.rr = new Float32Array(N);
+      this.VX = new Float32Array(N); this.VY = new Float32Array(N); this.VZ = new Float32Array(N);
+      for (var i = 0; i < N; i++) {
+        this.ang[i] = (i * 2.399963) % TAU;
+        this.rr[i] = M.sqrt((i + 0.5) / N);
+        this.VX[i] = M.random() * 2 - 1; this.VY[i] = M.random() * 1.2 - 0.1; this.VZ[i] = M.random() * 2 - 1;
+      }
+    },
+    draw: function (t) {
+      var zb = this.zb; zb.fill(1e9);
+      var tn = t / (this.dur / 1000);
+      var b = sm(0.04, 0.5, tn), d = sm(0.76, 1, tn);
+      var R = rows * 0.5;
+      var psi = t * 0.7 + mx * 1.2, phi = 1.0 + 0.18 * M.sin(t * 0.9) + my * 0.5;
+      var cPs = M.cos(psi), sPs = M.sin(psi), cPh = M.cos(phi), sPh = M.sin(phi);
+      var cx = cols / 2, cy = rows * 0.5;
+      for (var i = 0; i < this.N; i++) {
+        var rrv = this.rr[i], th = this.ang[i];
+        var pm = rrv > 0.5 ? 1 + 0.32 * M.cos(6 * th) : 1;
+        var r = rrv * R * pm * (0.15 + 0.85 * b);
+        var py = (1 - b) * rrv * R * 1.1 + rrv * rrv * R * 0.28 * (0.4 + 0.6 * b);
+        var px = r * M.cos(th), pz = r * M.sin(th);
+        if (d > 0) {
+          px += this.VX[i] * d * R * 1.7; pz += this.VZ[i] * d * R * 1.7;
+          py += (this.VY[i] * d - d * d * 0.9) * R * 1.3;
+        }
+        var x1 = px * cPs + pz * sPs, z1 = -px * sPs + pz * cPs;
+        var y2 = py * cPh + z1 * sPh, z2 = z1 * cPh - py * sPh;
+        var xp = M.round(cx + x1 * ASP), yp = M.round(cy - y2);
+        if (xp < 0 || xp >= cols || yp < 0 || yp >= rows) continue;
+        var f = 0.18 + 0.78 * M.pow(1 - rrv, 1.25) - z2 / (R * 1.5) * 0.15;
+        f *= 1 - d * 0.9;
+        if (f < 0.06) continue;
+        var idx = yp * cols + xp;
+        if (z2 >= zb[idx]) continue;
+        zb[idx] = z2;
+        chr[idx] = f > 0.8 ? "@" : f > 0.62 ? "O" : f > 0.45 ? "o" : f > 0.3 ? "+" : f > 0.18 ? ":" : ".";
+        pal[idx] = P.FLOWER; lv[idx] = level(f);
+      }
+    }
+  };
+
+  var balls = {
+    name: "metaballs", pal: 4, dur: 7500,
+    init: function () {},
+    draw: function (t) {
+      var b0x = M.sin(t * 1.1) * 1.15, b0y = 0.15 + M.sin(t * 1.7) * 0.45, b0z = M.cos(t * 0.9) * 0.7;
+      var b1x = M.cos(t * 1.3 + 2) * 1.2, b1y = 0.1 + M.sin(t * 1.1 + 1) * 0.5, b1z = M.sin(t * 1.2 + 1) * 0.7;
+      var b2x = M.sin(t * 0.8 + 4) * 0.9, b2y = 0.2 + M.cos(t * 1.5) * 0.5, b2z = M.cos(t * 1.0 + 3) * 0.6;
+      var lx = M.sin(t * 1.2) * 3.2, ly = 3.0, lz = -1.5 + M.cos(t * 1.2) * 1.5;
+      var rox = mx * 0.8, roy = 0.9 + my * 0.35, roz = -5.4;
+      var FLOOR = -1.2;
+      function smin(a, b, k) { var h = M.max(k - M.abs(a - b), 0) / k; return M.min(a, b) - h * h * k * 0.25; }
+      function map(x, y, z) {
+        var a = M.sqrt((x - b0x) * (x - b0x) + (y - b0y) * (y - b0y) + (z - b0z) * (z - b0z)) - 0.8;
+        var b = M.sqrt((x - b1x) * (x - b1x) + (y - b1y) * (y - b1y) + (z - b1z) * (z - b1z)) - 0.7;
+        var c = M.sqrt((x - b2x) * (x - b2x) + (y - b2y) * (y - b2y) + (z - b2z) * (z - b2z)) - 0.65;
+        var s = smin(smin(a, b, 0.7), c, 0.7);
+        var fl = y - FLOOR;
+        return s < fl ? s : fl;
+      }
+      var hy = rows / 2, hx = rows * ASP / 2;
+      for (var y = 0; y < rows; y++) {
+        var v = -((y + 0.5) - hy) / hy;
+        for (var x = 0; x < cols; x++) {
+          var u = ((x + 0.5) - cols / 2) / hx;
+          var dx = u, dy = v - 0.2, dz = 1.7;
+          var il = 1 / M.sqrt(dx * dx + dy * dy + dz * dz); dx *= il; dy *= il; dz *= il;
+          var tt = 0, hit = false, px = 0, py = 0, pz = 0;
+          for (var s = 0; s < 44; s++) {
+            px = rox + dx * tt; py = roy + dy * tt; pz = roz + dz * tt;
+            var d = map(px, py, pz);
+            if (d < 0.012) { hit = true; break; }
+            tt += d;
+            if (tt > 16) break;
+          }
+          if (!hit) continue;
+          var e = 0.01;
+          var k0 = map(px + e, py - e, pz - e), k1 = map(px - e, py - e, pz + e),
+              k2 = map(px - e, py + e, pz - e), k3 = map(px + e, py + e, pz + e);
+          var nx = k0 - k1 - k2 + k3, ny = -k0 - k1 + k2 + k3, nz = -k0 + k1 - k2 + k3;
+          var nl = 1 / (M.sqrt(nx * nx + ny * ny + nz * nz) || 1); nx *= nl; ny *= nl; nz *= nl;
+          var ldx = lx - px, ldy = ly - py, ldz = lz - pz;
+          var ln = 1 / M.sqrt(ldx * ldx + ldy * ldy + ldz * ldz); ldx *= ln; ldy *= ln; ldz *= ln;
+          var dif = nx * ldx + ny * ldy + nz * ldz; if (dif < 0) dif = 0;
+          var res = 1, st = 0.05, sx = px + nx * 0.04, sy = py + ny * 0.04, sz = pz + nz * 0.04;
+          if (dif > 0) {
+            for (var q = 0; q < 22; q++) {
+              var hh = map(sx + ldx * st, sy + ldy * st, sz + ldz * st);
+              var r2 = 7 * hh / st; if (r2 < res) res = r2;
+              if (res < 0.02) { res = 0; break; }
+              st += hh < 0.06 ? 0.06 : hh > 0.5 ? 0.5 : hh;
+              if (st > 7) break;
+            }
+          }
+          var isFloor = py < FLOOR + 0.03;
+          if (isFloor) {
+            var chk = ((M.floor(px * 0.9) + M.floor(pz * 0.9)) & 1) ? 1 : 0.72;
+            var fog = M.exp(-tt * 0.07);
+            var lf = (0.1 + 0.75 * dif * res) * chk * fog;
+            put(x, y, ramp(DRAMP, lf * 0.9 + 0.04), P.FLOOR, lf * 0.9 + 0.1);
+          } else {
+            var hvx = ldx - dx, hvy = ldy - dy, hvz = ldz - dz;
+            var hl = 1 / (M.sqrt(hvx * hvx + hvy * hvy + hvz * hvz) || 1);
+            var sp = nx * hvx * hl + ny * hvy * hl + nz * hvz * hl; if (sp < 0) sp = 0;
+            var lum = 0.1 + 0.8 * dif * res + 0.5 * M.pow(sp, 20) * res;
+            put(x, y, ramp(RAMP2, lum), P.BALL, lum);
+          }
+        }
+      }
+    }
+  };
+
+  var DX = [1, -1, 0, 0], DY = [0, 0, 1, -1];
+  var slime = {
+    name: "slime", pal: 6, dur: 9750,
+    init: function () {
+      this.age = new Int32Array(n).fill(-1);
+      this.fr = []; this.tick = 0;
+      this.s1 = M.random() * 6.3; this.s2 = M.random() * 6.3; this.s3 = M.random() * 6.3;
+      var cnt = M.max(3, M.min(8, (cols / 28) | 0));
+      for (var k = 0; k < cnt; k++) {
+        var sx = (M.random() * cols) | 0, sy = (rows * (0.2 + M.random() * 0.6)) | 0;
+        var id = sy * cols + sx;
+        this.age[id] = 0; this.fr.push(id);
+      }
+    },
+    hasEmpty: function (id) {
+      var x = id % cols, y = (id / cols) | 0, age = this.age;
+      return (x + 1 < cols && age[id + 1] < 0) || (x > 0 && age[id - 1] < 0) ||
+             (y + 1 < rows && age[id + cols] < 0) || (y > 0 && age[id - cols] < 0);
+    },
+    grow: function () {
+      var age = this.age, fr = this.fr, nf = [];
+      for (var k = 0; k < fr.length; k++) {
+        var id = fr[k], x = id % cols, y = (id / cols) | 0;
+        var dir = (M.random() * 4) | 0, nx = x + DX[dir], ny = y + DY[dir];
+        if (nx >= 0 && ny >= 0 && nx < cols && ny < rows) {
+          var j = ny * cols + nx;
+          if (age[j] < 0) {
+            var p = 0.5 + 0.38 * M.sin(nx * 0.17 + this.s1) * M.sin(ny * 0.45 + this.s2) +
+                    0.14 * M.sin((nx * 0.35 + ny) * 0.3 + this.s3);
+            if (dir > 1) p *= 0.55;
+            if (M.random() < p) { age[j] = this.tick; nf.push(j); }
+          }
+        }
+        if (this.hasEmpty(id)) nf.push(id);
+      }
+      this.fr = nf;
+    },
+    draw: function (t) {
+      var age = this.age, i, x, y;
+      var decayAt = this.dur / 1000 - 1.7;
+      if (t < decayAt) { for (var s = 0; s < 3; s++) { this.grow(); this.tick++; } }
+      else {
+        var pr = (t - decayAt) / 1.7 * 0.12;
+        for (i = 0; i < n; i++) if (age[i] >= 0 && M.random() < pr) age[i] = -1;
+      }
+      for (y = 0; y < rows; y++) for (x = 0; x < cols; x++) {
+        i = y * cols + x;
+        if (age[i] < 0) continue;
+        var a = this.tick - age[i];
+        var edge = (x + 1 >= cols || age[i + 1] < 0) || (x === 0 || age[i - 1] < 0) ||
+                   (y + 1 >= rows || age[i + cols] < 0) || (y === 0 || age[i - cols] < 0);
+        var pulse = 0.5 + 0.5 * M.sin(i * 0.37 + t * 3);
+        var f = 0.22 + 0.4 * pulse + (a < 40 ? (1 - a / 40) * 0.35 : 0);
+        var c;
+        if (edge) { c = a < 12 ? "@" : (i + (this.tick >> 3)) % 3 ? "o" : "O"; f += 0.15; }
+        else c = ":;,.'".charAt((i * 7 + (this.tick >> 2)) % 5);
+        put(x, y, c, P.SLIME, f);
+      }
+    }
+  };
+
+  var life = {
+    name: "life", pal: 7, dur: 8250,
+    init: function () {
+      this.g = new Uint8Array(n); this.h = new Uint8Array(n);
+      this.age = new Uint8Array(n); this.ghost = new Uint8Array(n);
+      this.acc = 0; this.gen = 0;
+      for (var i = 0; i < n; i++) this.g[i] = M.random() < 0.3 ? 1 : 0;
+    },
+    step: function () {
+      var g = this.g, h = this.h, age = this.age, ghost = this.ghost, x, y, i;
+      for (y = 0; y < rows; y++) {
+        var ym = ((y + rows - 1) % rows) * cols, yp = ((y + 1) % rows) * cols, yc = y * cols;
+        for (x = 0; x < cols; x++) {
+          var xm = (x + cols - 1) % cols, xp = (x + 1) % cols;
+          var c = g[ym + xm] + g[ym + x] + g[ym + xp] + g[yc + xm] + g[yc + xp] + g[yp + xm] + g[yp + x] + g[yp + xp];
+          i = yc + x;
+          var alive = g[i] ? (c === 2 || c === 3) : c === 3;
+          h[i] = alive ? 1 : 0;
+          if (alive) { age[i] = g[i] ? M.min(255, age[i] + 1) : 0; }
+          else { if (g[i]) ghost[i] = 7; else if (ghost[i] > 0) ghost[i]--; age[i] = 0; }
+        }
+      }
+      this.g = h; this.h = g;
+      this.gen++;
+      if (this.gen % 22 === 0) {
+        var bx = (M.random() * cols) | 0, by = (M.random() * rows) | 0;
+        for (var yy = 0; yy < 6; yy++) for (var xx = 0; xx < 14; xx++) {
+          if (M.random() < 0.5) this.g[((by + yy) % rows) * cols + ((bx + xx) % cols)] = 1;
+        }
+      }
+    },
+    draw: function (t, dt) {
+      this.acc += dt;
+      while (this.acc > 0.085) { this.acc -= 0.085; this.step(); }
+      var g = this.g, age = this.age, ghost = this.ghost;
+      for (var i = 0; i < n; i++) {
+        var x = i % cols, y = (i / cols) | 0;
+        if (g[i]) {
+          var a = age[i];
+          put(x, y, a < 2 ? "@" : a < 6 ? "O" : a < 14 ? "o" : "+", P.LIFE, 1 - M.min(a, 40) / 55);
+        } else if (ghost[i] > 0) {
+          put(x, y, ".", P.LIFE, ghost[i] / 7 * 0.4);
+        }
+      }
+    }
+  };
+
+  var tess = {
+    name: "tesseract", pal: 8, dur: 7500,
+    init: function () {
+      this.V = []; this.E = [];
+      var i, j;
+      for (i = 0; i < 16; i++) this.V.push([(i & 1) ? 1 : -1, (i & 2) ? 1 : -1, (i & 4) ? 1 : -1, (i & 8) ? 1 : -1]);
+      for (i = 0; i < 16; i++) for (j = i + 1; j < 16; j++) {
+        var x = i ^ j;
+        if (x === 1 || x === 2 || x === 4 || x === 8) this.E.push([i, j, x === 1 ? 0 : x === 2 ? 1 : x === 4 ? 2 : 3]);
+      }
+    },
+    draw: function (t) {
+      var a = t * 0.9, b = t * 0.6, c = t * 0.75, d = t * 0.3 + mx * 1.5, e = 0.5 * M.sin(t * 0.7) + my * 1.0;
+      var ca = M.cos(a), sa = M.sin(a), cb = M.cos(b), sb = M.sin(b), cc = M.cos(c), sc = M.sin(c);
+      var cd = M.cos(d), sd = M.sin(d), ce = M.cos(e), se = M.sin(e);
+      var cx = cols / 2, cy = rows * 0.5, U = rows * 0.34;
+      var pts = [], i;
+      for (i = 0; i < 16; i++) {
+        var v = this.V[i], x = v[0], y = v[1], z = v[2], w = v[3], tmp;
+        tmp = x * ca - w * sa; w = x * sa + w * ca; x = tmp;
+        tmp = y * cb - w * sb; w = y * sb + w * cb; y = tmp;
+        tmp = z * cc - w * sc; w = z * sc + w * cc; z = tmp;
+        tmp = x * cd - y * sd; y = x * sd + y * cd; x = tmp;
+        tmp = y * ce - z * se; z = y * se + z * ce; y = tmp;
+        var s4 = 1 / (2.4 - w);
+        var X = x * s4, Y = y * s4, Z = z * s4;
+        var s3 = 1 / (1 + Z * 0.18);
+        pts.push([cx + X * s3 * U * ASP, cy - Y * s3 * U, Z]);
+      }
+      var edges = this.E.map(function (ed) {
+        var p = pts[ed[0]], q = pts[ed[1]];
+        return { p: p, q: q, ax: ed[2], z: (p[2] + q[2]) / 2 };
+      }).sort(function (u, v) { return v.z - u.z; });
+      var PA = [P.T0, P.T1, P.T2, P.T3];
+      for (i = 0; i < edges.length; i++) {
+        var ed = edges[i], dx = ed.q[0] - ed.p[0], dy = ed.q[1] - ed.p[1];
+        var steps = M.max(M.abs(dx), M.abs(dy)) | 0;
+        var ang = M.abs(M.atan2(dy * ASP, dx)), ch;
+        if (ang < 0.39 || ang > 2.75) ch = "-";
+        else if (ang > 1.18 && ang < 1.96) ch = "|";
+        else ch = dx * dy > 0 ? "\\" : "/";
+        var f = clamp01(0.55 - ed.z * 0.25);
+        for (var k = 0; k <= steps; k++) {
+          var u = steps ? k / steps : 0;
+          put(M.round(ed.p[0] + dx * u), M.round(ed.p[1] + dy * u), ch, PA[ed.ax], f);
+        }
+      }
+      for (i = 0; i < 16; i++) put(M.round(pts[i][0]), M.round(pts[i][1]), "@", P.T0, clamp01(0.95 - pts[i][2] * 0.2));
+    }
+  };
+
+  var scenes = [donut, tele, flower, balls, slime, life, tess];
+
+  function shiftRow(r, sh) {
+    var o = r * cols, tc = chr.slice(o, o + cols), tp = pal.slice(o, o + cols), tl = lv.slice(o, o + cols);
+    for (var c = 0; c < cols; c++) {
+      var s = (c - sh + cols * 4) % cols;
+      chr[o + c] = tc[s]; pal[o + c] = tp[s]; lv[o + c] = tl[s];
+    }
+  }
+  function glitch(g) {
+    var r, c, i, k;
+    for (r = 0; r < rows; r++) {
+      if (M.random() < g * 0.55) {
+        var sh = ((M.random() * 2 - 1) * g * cols * 0.22) | 0;
+        if (sh) shiftRow(r, sh);
+      }
+    }
+    var nb = 1 + ((g * 3) | 0);
+    for (k = 0; k < nb; k++) {
+      var r0 = (M.random() * rows) | 0, hh = 1 + ((M.random() * 3) | 0), p = 1 + ((M.random() * (PALS.length - 1)) | 0);
+      for (r = r0; r < r0 + hh && r < rows; r++) for (c = 0; c < cols; c++) {
+        if (M.random() < 0.55 * g + 0.15) {
+          i = r * cols + c;
+          chr[i] = GL.charAt((M.random() * GL.length) | 0); pal[i] = p; lv[i] = 8 + ((M.random() * 14) | 0);
+        }
+      }
+    }
+    var cnt = (n * g * 0.05) | 0;
+    for (k = 0; k < cnt; k++) {
+      i = (M.random() * n) | 0;
+      chr[i] = GL.charAt((M.random() * GL.length) | 0); pal[i] = (M.random() * PALS.length) | 0; lv[i] = 6 + ((M.random() * 16) | 0);
+    }
+    for (r = 0; r < rows; r++) {
+      if (M.random() < g * 0.2) {
+        var pp = 1 + ((M.random() * (PALS.length - 1)) | 0);
+        for (c = 0; c < cols; c++) { i = r * cols + c; if (chr[i] !== " ") pal[i] = pp; }
+      }
+    }
+  }
+
+  function paint() {
+    ctx.clearRect(0, 0, cv.clientWidth, cv.clientHeight);
+    var last = -1;
+    for (var r = 0; r < rows; r++) {
+      var y = r * CH + CH / 2;
+      for (var c = 0; c < cols; c++) {
+        var i = r * cols + c, ch = chr[i];
+        if (ch === " ") continue;
+        var key = pal[i] * LV + lv[i];
+        if (key !== last) { ctx.fillStyle = LUT[key]; last = key; }
+        ctx.fillText(ch, c * cw, y);
+      }
+    }
+  }
+
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = (M.random() * (i + 1)) | 0, tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function Bag(items, first, make) {
+    this.items = items;
+    this.make = make;
+    this.last = null;
+    this.q = first === undefined ? [] : [first].concat(shuffle(items.filter(function (x) { return x !== first; })));
+  }
+  Bag.prototype.next = function () {
+    if (!this.q.length) {
+      if (this.make) this.q = this.make(this.last);
+      else this.q = shuffle(this.items);
+      if (!this.make && this.items.length > 1 && this.q[0] === this.last) {
+        var k = 1 + ((M.random() * (this.q.length - 1)) | 0), tmp = this.q[0];
+        this.q[0] = this.q[k]; this.q[k] = tmp;
+      }
+    }
+    this.last = this.q.shift();
+    return this.last;
+  };
+
+  tele.bag = new Bag(tele.WORDS, "21"); 
+  function makeCycle(last) {
+    var items = scenes.slice();
+    if (M.random() < 0.7) items.push(tele);
+    var q, ok, tries = 0;
+    do {
+      q = shuffle(items);
+      ok = q[0] !== last;
+      for (var i = 1; ok && i < q.length; i++) if (q[i] === q[i - 1]) ok = false;
+    } while (!ok && ++tries < 200);
+    return q;
+  }
+  var sceneBag = new Bag(scenes, flower, makeCycle);
+  sceneBag.q = [flower, tele].concat(shuffle(scenes.filter(function (x) { return x !== flower && x !== tele; })));
+
+  var COLORS = [
+    [[150, 75], [112, 90]],  // green
+    [[268, 80], [292, 88]],  // violet
+    [[214, 85], [190, 90]],  // blue
+    [[330, 82], [352, 90]],  // pink
+    [[18, 90], [42, 96]],    // autumn orange
+    [[186, 75], [160, 85]],  // teal
+    [[42, 90], [58, 96]],    // gold
+    [[96, 72], [68, 92]],    // lime
+    [[8, 85], [28, 95]]      // coral
+  ];
+  var AUTUMN = 4, lastColor = -1;
+  function applyColor(sc, ci) {
+    var c = COLORS[ci];
+    if (sc === tess) {
+      for (var k = 0; k < 4; k++) {
+        PALS[P.T0 + k] = [[(c[0][0] + k * 38) % 360, c[0][1]], [(c[1][0] + k * 38) % 360, c[1][1]]];
+      }
+    } else {
+      PALS[sc.pal] = [c[0].slice(), c[1].slice()];
+    }
+    buildLUT();
+  }
+
+  var cur = flower, t0 = 0, lastFrame = 0, trans = null, TDUR = 520;
+  function start(sc, now, keep) {
+    cur = sc; t0 = now;
+    if (!keep) {
+      if (sc.pick) sc.pick();
+      var ci;
+      if (sc === flower && lastColor === -1) ci = AUTUMN;
+      else { do { ci = (M.random() * COLORS.length) | 0; } while (ci === lastColor); }
+      lastColor = ci;
+      applyColor(sc, ci);
+    }
+    sc.init();
+  }
+  sceneBag.next(); 
+
+  function frame(now) {
+    window.requestAnimationFrame(frame);
+    if (now - lastFrame < 33) return;
+    var dt = M.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+    mx += (tmx - mx) * 0.08; my += (tmy - my) * 0.08;
+
+    var sc = cur;
+    if (!trans && now - t0 >= sc.dur) trans = { s: now, sw: false };
+    var g = 0;
+    if (trans) {
+      var p = (now - trans.s) / TDUR;
+      if (p >= 0.5 && !trans.sw) { trans.sw = true; start(sceneBag.next(), now); sc = cur; }
+      if (p >= 1) trans = null; else g = 1 - M.abs(p * 2 - 1);
+      if (g > 0 && M.random() < 0.25 * g) return; 
+    }
+
+    var t = (now - t0) / 1000;
+    chr.fill(" ");
+    sc.draw(t, dt);
+    if (g > 0) glitch(g);
+    paint();
+  }
+
+  window.addEventListener("pointermove", function (e) {
+    tmx = (e.clientX / window.innerWidth - 0.5) * 2;
+    tmy = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  var lastW = cv.clientWidth;
+  window.addEventListener("resize", function () {
+    if (cv.clientWidth === lastW) return;
+    lastW = cv.clientWidth;
+    setup();
+    start(cur, window.performance.now(), true);
+    if (still) { chr.fill(" "); cur.draw(2.2, 0); paint(); }
+  });
+
+  setup();
+  start(flower, window.performance.now());
+  if (still) {
+    flower.draw(2.2, 0);
+    paint();
+  } else {
+    window.requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
