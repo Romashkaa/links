@@ -2,39 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Romashka's</title>
 <style>
 :root {
-  --bg: #f5f5f7;
-  --fg: #1d1d1f;
-  --muted: #6e6e73;
-  --line: rgba(60, 60, 67, .16);
+  --bg: #000000;
+  --fg: #f5f5f7;
+  --muted: #98989f;
+  --line: rgba(255, 255, 255, .14);
   --accent: #0a84ff;
-  --gray: #8e8e93;
+  --gray: #98989d;
   --blue: #0a84ff;
-  --green: #34c759;
-  --orange: #ff9500;
-  --pink: #ff2d55;
-  --purple: #af52de;
-  --teal: #30b0c7;
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --fg: #f5f5f7;
-    --muted: #98989f;
-    --line: rgba(255, 255, 255, .14);
-    --gray: #98989d;
-    --blue: #0a84ff;
-    --green: #30d158;
-    --orange: #ff9f0a;
-    --pink: #ff375f;
-    --purple: #bf5af2;
-    --teal: #40c8e0;
-  }
+  --green: #30d158;
+  --orange: #ff9f0a;
+  --pink: #ff375f;
+  --purple: #bf5af2;
+  --teal: #40c8e0;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -244,8 +230,7 @@ document.getElementById("root").innerHTML = data.map(function (c) {
   var cv = document.getElementById("fx");
   var ctx = cv.getContext("2d");
   var still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var darkMq = window.matchMedia("(prefers-color-scheme: dark)");
-
+  
   var FS = 13, CH = 16;
   var FONT = FS + 'px ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace';
   var LV = 24;
@@ -271,7 +256,7 @@ document.getElementById("root").innerHTML = data.map(function (c) {
     [[160, 75], [135, 85]]
   ];
 
-  var dark = darkMq.matches, LUT = [];
+  var dark = true, LUT = [];
   function buildLUT() {
     LUT.length = 0;
     for (var p = 0; p < PALS.length; p++) {
@@ -288,9 +273,6 @@ document.getElementById("root").innerHTML = data.map(function (c) {
     }
   }
   buildLUT();
-  if (darkMq.addEventListener) {
-    darkMq.addEventListener("change", function (e) { dark = e.matches; buildLUT(); });
-  }
 
   var cw = 8, cols = 0, rows = 0, n = 0, ASP = 2, chr, pal, lv;
   var mx = 0, my = 0, tmx = 0, tmy = 0;
